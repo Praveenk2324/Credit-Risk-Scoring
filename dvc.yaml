@@ -1,0 +1,16 @@
+stages:
+  ingest:
+    cmd: python src/ingest.py
+    deps:
+      - src/ingest.py
+      - data/simulation_stream/01_base_data.csv
+    outs:
+      - data/raw/current_data.csv
+
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - data/raw/current_data.csv
+    outs:
+      - data/processed/train.parquet

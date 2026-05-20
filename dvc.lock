@@ -1,0 +1,34 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python src/ingest.py
+    deps:
+    - path: data/simulation_stream/01_base_data.csv
+      hash: md5
+      md5: 7abdfcab9faa63f9b0d134cde319b1f9
+      size: 5965695
+    - path: src/ingest.py
+      hash: md5
+      md5: d88bbe6954f53ba4fc3ce881d327b6c4
+      size: 351
+    outs:
+    - path: data/raw/current_data.csv
+      hash: md5
+      md5: 7abdfcab9faa63f9b0d134cde319b1f9
+      size: 5965695
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/raw/current_data.csv
+      hash: md5
+      md5: 7abdfcab9faa63f9b0d134cde319b1f9
+      size: 5965695
+    - path: src/preprocess.py
+      hash: md5
+      md5: c962534a6cc3553fa356b90ca4d1607b
+      size: 361
+    outs:
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: b8579a2cd143784f9747b849bfca623f
+      size: 2857342

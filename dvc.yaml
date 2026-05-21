@@ -14,3 +14,9 @@ stages:
       - data/raw/current_data.csv
     outs:
       - data/processed/train.parquet
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/processed/train.parquet

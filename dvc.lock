@@ -25,10 +25,21 @@ stages:
       size: 5965695
     - path: src/preprocess.py
       hash: md5
-      md5: c962534a6cc3553fa356b90ca4d1607b
-      size: 361
+      md5: 38bfb9ad341000314d019ed6d67d2294
+      size: 2326
     outs:
     - path: data/processed/train.parquet
       hash: md5
-      md5: b8579a2cd143784f9747b849bfca623f
-      size: 2857342
+      md5: 95170586ae65a8aa3a3733b4a00f946e
+      size: 2793011
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: 95170586ae65a8aa3a3733b4a00f946e
+      size: 2793011
+    - path: src/train.py
+      hash: md5
+      md5: e386a4aac592da2fe1ce543c6ac5a80b
+      size: 3887

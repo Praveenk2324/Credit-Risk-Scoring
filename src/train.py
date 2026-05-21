@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+from sklearn.metrics import roc_auc_score
 import mlflow
 import os
 
@@ -32,19 +33,22 @@ def main():
     print(f"Executing on device: {device}")
 
     print("Loading processed data...")
-    df = pd.read_parquet('data/processed/train.parquet')
+    train_df = pd.read_parquet('data/processed/train.parquet')
+    val_df = pd.read_parquet('data/processed/val.parquet')
 
-    X = df.drop('SeriousDlqin2yrs', axis=1).values
-    y = df['SeriousDlqin2yrs'].values
+    def prepare_data(df):
+        X = df.drop('SeriousDlqin2yrs', axis=1).values
+        y = df['SeriousDlqin2yrs'].values
+        return torch.FloatTensor(X), torch.FloatTensor(y).view(-1, 1)
 
-    X_tensor = torch.FloatTensor(X)
-    y_tensor = torch.FloatTensor(y).view(-1, 1)
+    X_train, y_train = prepare_data(train_df)
+    X_val, y_val = prepare_data(val_df)
 
-    dataset = TensorDataset(X_tensor, y_tensor)
-    dataloader = DataLoader(dataset, batch_size=64, shuffle=True)
+    train_loader = DataLoader(TensorDataset(X_train, y_train), batch_size=64, shuffle=True)
+    val_loader = DataLoader(TensorDataset(X_val, y_val), batch_size=64, shuffle=False)
+
     
-    model = TabularNet(input_dim=X.shape[1]).to(device)
-
+    model = TabularNet(input_dim=X_train.shape[1]).to(device)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -59,9 +63,9 @@ def main():
         epochs = 5
         for epoch in range(epochs):
             model.train()
-            running_loss = 0.0
+            train_loss = 0.0
 
-            for batch_X, batch_y in dataloader:
+            for batch_X, batch_y in train_loader:
                 batch_X, batch_y = batch_X.to(device), batch_y.to(device)
 
                 optimizer.zero_grad()
@@ -70,14 +74,38 @@ def main():
                 loss.backward()
                 optimizer.step()
 
-                running_loss += loss.item()
+                train_loss += loss.item()
+            avg_train_loss = train_loss / len(train_loader)
             
-            avg_loss = running_loss / len(dataloader)
-            print(f"Epoch {epoch+1}/{epochs} - Loss: {avg_loss:.4f}")
-            mlflow.log_metric("train_loss", avg_loss, step=epoch)
-        
-        print("Training complete! Logging model to mlflow...")
+            model.eval()
+            val_loss = 0.0
+            all_preds = []
+            all_targets = []
+
+            with torch.no_grad():
+                for batch_X, batch_y in val_loader:
+                    batch_X, batch_y = batch_X.to(device), batch_y.to(device)
+                    outputs = model(batch_X)
+                    loss = criterion(outputs, batch_y)
+                    val_loss += loss.item()
+
+                    probs = torch.sigmoid(outputs)
+                    all_preds.extend(probs.cpu().numpy())
+                    all_targets.extend(batch_y.cpu().numpy())
+
+            avg_val_loss = val_loss / len(val_loader)
+            val_auc = roc_auc_score(all_targets, all_preds)
+            
+            print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Val AUC: {val_auc:.4f}")
+            
+            # Log all three metrics to MLflow
+            mlflow.log_metric("train_loss", avg_train_loss, step=epoch)
+            mlflow.log_metric("val_loss", avg_val_loss, step=epoch)
+            mlflow.log_metric("val_auc", val_auc, step=epoch)
+            
+        print("Training complete! Logging model to MLflow...")
         mlflow.pytorch.log_model(model, "model")
+       
 
 if __name__ == '__main__':
     main()

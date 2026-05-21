@@ -55,4 +55,11 @@ def main():
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
     X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
-    pd
+    pd.concat([X_train, y_train], axis=1).to_parquet('data/processed/train.parquet')
+    pd.concat([X_val, y_val], axis=1).to_parquet('data/processed/val.parquet')
+    pd.concat([X_test, y_test], axis=1).to_parquet('data/processed/test.parquet')
+
+    print("Data successfully preprocessed and saved!")
+
+if __name__ == "__main__":
+    main()

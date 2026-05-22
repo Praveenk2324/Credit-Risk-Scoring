@@ -1,5 +1,4 @@
 data/*
 *.csv
 mlruns/*
-production_model/*
 __pycache__

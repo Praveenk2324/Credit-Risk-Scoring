@@ -110,3 +110,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Best Parameters:
+#     learning_rate: 0.0020664060646579277
+#     batch_size: 64
+#     dropout_rate: 0.14212497750656095
+#     hidden_size_1: 32
+#     hidden_size_2: 64

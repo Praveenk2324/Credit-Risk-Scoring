@@ -25,24 +25,36 @@ stages:
       size: 5965695
     - path: src/preprocess.py
       hash: md5
-      md5: 38bfb9ad341000314d019ed6d67d2294
-      size: 2326
+      md5: c831536212b407e0360622bc082adffb
+      size: 2407
     outs:
+    - path: data/processed/scaler.pkl
+      hash: md5
+      md5: acd3b3f7dcb5c3b0f11c2ca3f3d501d5
+      size: 1431
     - path: data/processed/train.parquet
       hash: md5
       md5: 95170586ae65a8aa3a3733b4a00f946e
       size: 2793011
+    - path: data/processed/val.parquet
+      hash: md5
+      md5: 18b4b31ec85471b3b3dc04a9691a6f47
+      size: 615909
   train:
     cmd: python src/train.py
     deps:
+    - path: data/processed/scaler.pkl
+      hash: md5
+      md5: acd3b3f7dcb5c3b0f11c2ca3f3d501d5
+      size: 1431
     - path: data/processed/train.parquet
       hash: md5
       md5: 95170586ae65a8aa3a3733b4a00f946e
       size: 2793011
     - path: src/train.py
       hash: md5
-      md5: 930b1a83f00c73c7ef86e851ee7e4db7
-      size: 4878
+      md5: 38c2196ca4ea98d4e3cf76d37960a8cb
+      size: 4959
     params:
       params.yaml:
         train.architecture.dropout_rate: 0.14212497750656095

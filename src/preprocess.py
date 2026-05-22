@@ -3,7 +3,7 @@ import os
 import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
-
+import joblib
 
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
@@ -39,9 +39,11 @@ def clean_and_scale(df):
     X['DebtRatio'] = X['DebtRatio'].clip(upper=debt_cap)
 
     scaler = StandardScaler()
-    X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
 
-    return X_scaled, y
+    joblib.dump(scaler, 'data/processed/scaler.pkl')
+
+    return X_train_scaled, y
 
 def main():
     os.makedirs('data/preprocessed', exist_ok=True)

@@ -14,12 +14,15 @@ stages:
       - data/raw/current_data.csv
     outs:
       - data/processed/train.parquet
+      - data/processed/val.parquet
+      - data/processed/scaler.pkl
 
   train:
     cmd: python src/train.py
     deps:
       - src/train.py
       - data/processed/train.parquet
+      - data/processed/scaler.pkl
     params:
       - train.learning_rate
       - train.batch_size

@@ -121,6 +121,7 @@ def main():
             
         print("Training complete! Logging model to MLflow...")
         mlflow.pytorch.log_model(model, "model")
+        mlflow.log_artifact("data/processed/scaler.pkl", artifact_path="model")
 
 if __name__ == '__main__':
     main()

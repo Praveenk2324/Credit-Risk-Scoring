@@ -16,7 +16,10 @@ def clean_and_scale(df):
     X = df.drop('SeriousDlqin2yrs', axis=1).copy()
     y = df['SeriousDlqin2yrs'].copy()
 
+    # --- THE FIX: Create BOTH missing flags before imputing ---
     X['MonthlyIncome_is_missing'] = np.where(X['MonthlyIncome'].isnull(), 1, 0)
+    X['NumberOfDependents_is_missing'] = np.where(X['NumberOfDependents'].isnull(), 1, 0)
+    
     income_imputer = SimpleImputer(strategy='median')
     X['MonthlyIncome'] = income_imputer.fit_transform(X[['MonthlyIncome']])
 

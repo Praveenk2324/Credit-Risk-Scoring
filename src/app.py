@@ -2,52 +2,57 @@
 import streamlit as st
 import requests
 
-# 1. Page Configuration
 st.set_page_config(page_title="Credit Risk Engine", page_icon="💳", layout="wide")
 
 st.title("💳 Credit Risk Decision Engine")
-st.markdown("This dashboard connects to our local Docker container (FastAPI) to predict default risk based on the borrower's financial profile.")
+st.markdown("Enter the borrower's actual financial details below. The Streamlit UI sends this raw data to our Docker API, which dynamically scales it using the production `scaler.pkl` before consulting the PyTorch model.")
 
+# --- 1. RAW DATA COLLECTION (Human-Readable UI) ---
 st.subheader("Borrower Financial Profile")
 
-# 2. Define the actual feature names (MUST MATCH THE EXACT ORDER OF YOUR TRAINING DATA)
-feature_names = [
-    "Revolving Utilization (Unsecured Lines)",
-    "Borrower Age",
-    "Times 30-59 Days Past Due",
-    "Debt Ratio",
-    "Monthly Income",
-    "Open Credit Lines & Loans",
-    "Times 90+ Days Late",
-    "Real Estate Loans / Mortgages",
-    "Times 60-89 Days Past Due",
-    "Number of Dependents",
-    "Income is Missing (1=Yes, 0=No)",
-    "Dependents is Missing (1=Yes, 0=No)"
-]
+col1, col2, col3, col4 = st.columns(4)
 
-# The default scaled values for our baseline test
-default_vals = [0.5, -1.2, 0.0, 2.1, -0.5, 1.1, 0.0, -0.2, 0.0, 1.5, 1.0, 0.0]
+with col1:
+    age = st.number_input("Borrower Age", min_value=18, max_value=100, value=45, step=1)
+    income = st.number_input("Monthly Income ($)", min_value=0, value=6500, step=500, format="%d")
+    dependents = st.number_input("Number of Dependents", min_value=0, max_value=20, value=2, step=1)
 
-# 3. Create an organized grid (4 columns looks better for 12 features)
-cols = st.columns(4)
-features = []
+with col2:
+    debt_ratio = st.number_input("Debt Ratio (%)", min_value=0.0, value=35.0, step=1.0) / 100.0
+    utilization = st.number_input("Credit Utilization (%)", min_value=0.0, value=30.0, step=1.0) / 100.0
+    open_lines = st.number_input("Open Credit Lines", min_value=0, value=8, step=1)
 
-for i, name in enumerate(feature_names):
-    with cols[i % 4]:
-        # Now the UI displays the actual financial term!
-        val = st.number_input(name, value=default_vals[i], step=0.1)
-        features.append(val)
+with col3:
+    real_estate = st.number_input("Real Estate Loans", min_value=0, value=1, step=1)
+    late_30_59 = st.number_input("Times 30-59 Days Late", min_value=0, value=0, step=1)
+    late_60_89 = st.number_input("Times 60-89 Days Late", min_value=0, value=0, step=1)
+
+with col4:
+    late_90_plus = st.number_input("Times 90+ Days Late", min_value=0, value=0, step=1)
+    
+    # Auto-calculate the missing flags based on user input
+    income_missing = 1.0 if income == 0 else 0.0
+    dependents_missing = 1.0 if dependents == 0 else 0.0
 
 st.divider()
 
-# 4. The Prediction Button
+# --- 2. API COMMUNICATION ---
 if st.button("Predict Risk", type="primary", use_container_width=True):
-    API_URL = "http://127.0.0.1:8000/predict"
-    payload = {"features": features}
     
-    with st.spinner("Consulting the PyTorch Model..."):
+    # The exact order must match the 12 features expected by the PyTorch model
+    # (10 continuous features first, followed by the 2 binary missing flags)
+    raw_array = [
+        utilization, age, late_30_59, debt_ratio, income, 
+        open_lines, late_90_plus, real_estate, late_60_89, dependents,
+        income_missing, dependents_missing
+    ]
+    
+    API_URL = "http://127.0.0.1:8000/predict"
+    payload = {"features": raw_array}
+    
+    with st.spinner("Consulting the Docker API..."):
         try:
+            # Send the RAW data to the API
             response = requests.post(API_URL, json=payload)
             response.raise_for_status() 
             
@@ -66,6 +71,9 @@ if st.button("Predict Risk", type="primary", use_container_width=True):
                 st.success(f"**System Decision:** {tier}")
                 
             st.metric(label="Probability of Default within 2 Years", value=f"{prob * 100:.2f}%")
+            
+            with st.expander("View Raw Payload Sent to Docker"):
+                st.write("Streamlit sent these exact unscaled values to the API:", raw_array)
             
         except requests.exceptions.ConnectionError:
             st.error("🚨 Connection Error: Could not reach the API. Is your Docker container running on port 8000?")

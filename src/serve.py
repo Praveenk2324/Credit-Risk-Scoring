@@ -6,10 +6,23 @@ import joblib
 import numpy as np
 import traceback
 import os
-
 import __main__
+
+# 1. Alias the baseline model
 from src.train import TabularNet
 __main__.TabularNet = TabularNet
+
+# 2. Alias the Optuna tuned model in case it won the registry!
+try:
+    from src.tune import FlexibleTabularNet
+    __main__.FlexibleTabularNet = FlexibleTabularNet
+except ImportError:
+    # Fallback just in case you saved tune.py in the root folder instead of src/
+    try:
+        from tune import FlexibleTabularNet
+        __main__.FlexibleTabularNet = FlexibleTabularNet
+    except ImportError:
+        pass
 
 app = FastAPI(title="Credit Risk Scoring API", version="1.1")
 

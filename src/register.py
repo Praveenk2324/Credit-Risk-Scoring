@@ -15,7 +15,7 @@ def main():
     print(f"Searching for the best model in experiment ID: {experiment.experiment_id}")
     best_run = client.search_runs(
         experiment_ids=[experiment.experiment_id],
-        order_by=["metrics.val_auc DESC"],
+        order_by=["attributes.start_time DESC"], # Grab the newest run!
         max_results=1
     )[0]
 

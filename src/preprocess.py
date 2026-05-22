@@ -10,15 +10,19 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 def clean_and_scale(df):
-    if 'Unnamed: 0' in df.columns:
-        df = df.drop('Unnamed: 0', axis=1)
-    
-    X = df.drop('SeriousDlqin2yrs', axis=1).copy()
+    expected_features = [
+        'RevolvingUtilizationOfUnsecuredLines', 'age',
+        'NumberOfTime30-59DaysPastDueNotWorse', 'DebtRatio',
+        'MonthlyIncome', 'NumberOfOpenCreditLinesAndLoans',
+        'NumberOfTimes90DaysLate', 'NumberRealEstateLoansOrLines',
+        'NumberOfTime60-89DaysPastDueNotWorse', 'NumberOfDependents'
+    ]
+    X = df[expected_features].copy()
     y = df['SeriousDlqin2yrs'].copy()
 
-    # --- THE FIX: Create BOTH missing flags before imputing ---
-    X['MonthlyIncome_is_missing'] = np.where(X['MonthlyIncome'].isnull(), 1, 0)
-    X['NumberOfDependents_is_missing'] = np.where(X['NumberOfDependents'].isnull(), 1, 0)
+    # 2. Create BOTH missing flags (Total is now perfectly locked at 12 features)
+    X['MonthlyIncome_is_missing'] = np.where(X['MonthlyIncome'].isnull(), 1.0, 0.0)
+    X['NumberOfDependents_is_missing'] = np.where(X['NumberOfDependents'].isnull(), 1.0, 0.0)
     
     income_imputer = SimpleImputer(strategy='median')
     X['MonthlyIncome'] = income_imputer.fit_transform(X[['MonthlyIncome']])

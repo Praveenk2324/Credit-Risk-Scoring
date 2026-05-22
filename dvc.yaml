@@ -25,5 +25,5 @@ stages:
       - train.batch_size
       - train.epochs
       - train.architecture.dropout_rate
-      - train.architecture.hidden_size_1
-      - train.architecture.hidden_size_2
+      - train.architecture.hidden_1
+      - train.architecture.hidden_2

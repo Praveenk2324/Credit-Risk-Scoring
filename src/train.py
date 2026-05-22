@@ -52,8 +52,8 @@ def main():
     batch_size = params['batch_size']
     epochs = params['epochs']
     dropout_rate = params['architecture']['dropout_rate']
-    hidden_1 = params['architecture']['hidden_size_1']
-    hidden_2 = params['architecture']['hidden_size_2']
+    hidden_1 = params['architecture']['hidden_1']
+    hidden_2 = params['architecture']['hidden_2']
 
     print("Loading processed data...")
     X_train, y_train, X_val, y_val = load_data()

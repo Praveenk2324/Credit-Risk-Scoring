@@ -41,5 +41,13 @@ stages:
       size: 2793011
     - path: src/train.py
       hash: md5
-      md5: e386a4aac592da2fe1ce543c6ac5a80b
-      size: 3887
+      md5: 930b1a83f00c73c7ef86e851ee7e4db7
+      size: 4878
+    params:
+      params.yaml:
+        train.architecture.dropout_rate: 0.14212497750656095
+        train.architecture.hidden_1: 32
+        train.architecture.hidden_2: 64
+        train.batch_size: 64
+        train.epochs: 5
+        train.learning_rate: 0.0020664060646579277

@@ -9,8 +9,8 @@ stages:
       size: 5965695
     - path: src/ingest.py
       hash: md5
-      md5: d88bbe6954f53ba4fc3ce881d327b6c4
-      size: 351
+      md5: e9a5085a936cfa06e62b794fef9a26bf
+      size: 437
     outs:
     - path: data/raw/current_data.csv
       hash: md5

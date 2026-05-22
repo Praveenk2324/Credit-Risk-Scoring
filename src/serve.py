@@ -2,14 +2,19 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import mlflow
 import torch
+import traceback
 import os
+
+import __main__
+from src.train import TabularNet
+__main__.TabularNet = TabularNet
 
 app = FastAPI(title="Credit Risk Scoring API", version="1.0")
 
 print("Booting up API and fetching Production model from MLflow...")
 try:
-    model_uri = "models:/CreditRisk_PyTorch_Model/Production"
-    model = mlflow.pytorch.load_model(model_uri)
+    model_uri = "production_model"
+    model = mlflow.pytorch.load_model(model_uri, map_location=torch.device('cpu'))
     model.eval()
     print("Model Loaded Successfully!")
 except Exception as e:
@@ -23,11 +28,11 @@ class BorrowerData(BaseModel):
 def predict_risk(data: BorrowerData):
     if model is None:
         raise HTTPException(status_code=500, detail="Model is not loaded.")
-    if len(data.features) != 10:
+    if len(data.features) != 12:
         raise HTTPException(status_code=400, detail="Expected exactly 10 features.")
     
     try:
-        input_tensor = torch.FLoatTensor([data.features])
+        input_tensor = torch.FloatTensor([data.features])
 
         with torch.no_grad():
             raw_logit = model(input_tensor)
@@ -42,7 +47,8 @@ def predict_risk(data: BorrowerData):
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, deatil=str(e))
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 def health_check():

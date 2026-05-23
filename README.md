@@ -42,7 +42,7 @@ This project is built across five distinct engineering pillars:
 ├── dvc.yaml                # DVC Pipeline definition
 ├── params.yaml             # Hyperparameters for training
 └── requirements.txt        # Python dependencies
-
+```
 ## 🚀 How to Run Locally
 
 ### 1. Prerequisites

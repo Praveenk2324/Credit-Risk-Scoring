@@ -42,3 +42,17 @@ This project is built across five distinct engineering pillars:
 ├── dvc.yaml                # DVC Pipeline definition
 ├── params.yaml             # Hyperparameters for training
 └── requirements.txt        # Python dependencies
+
+## 🚀 How to Run Locally
+
+### 1. Prerequisites
+* Python 3.11+
+* Docker Desktop
+* Git
+
+### 2. Setup & Installation
+Clone the repository and install the dependencies:
+```bash
+git clone [https://github.com/praveenk2324/credit-risk-scoring.git](https://github.com/praveenk2324/credit-risk-scoring.git)
+cd credit-risk-scoring
+pip install -r requirements.txt

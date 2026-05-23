@@ -6,7 +6,7 @@ st.set_page_config(page_title="Credit Risk Engine", page_icon="💳", layout="wi
 
 st.title("💳 Credit Risk Decision Engine")
 # st.markdown("Enter the borrower's actual financial details below. The Streamlit UI sends this raw data to our Docker API, which dynamically scales it using the production `scaler.pkl` before consulting the PyTorch model.")
-
+st.markdown("Enter the borrower's actual financial details below")
 # --- 1. RAW DATA COLLECTION (Human-Readable UI) ---
 st.subheader("Borrower Financial Profile")
 

@@ -56,3 +56,48 @@ Clone the repository and install the dependencies:
 git clone [https://github.com/praveenk2324/credit-risk-scoring.git](https://github.com/praveenk2324/credit-risk-scoring.git)
 cd credit-risk-scoring
 pip install -r requirements.txt
+```
+
+### 3. Simulate Continuous Training (CT)
+Run the automated orchestrator to ingest data, trigger the DVC pipeline, train the model, validate the AUC, and extract the artifacts:
+
+```bash
+# Train on baseline data
+python src/trigger_ct.py 01_base_data.csv
+
+# Simulate an economic crash (Data Drift)
+python src/trigger_ct.py 02_batch_2_drifted.csv
+```
+Note: If the drifted data causes the model to perform below the 0.80 AUC threshold, the pipeline will intentionally fail, preventing a degraded model from reaching production.
+
+### 4. Run the Application
+Start the FastAPI Backend (via Docker):
+
+```bash
+docker build -t credit-risk-api .
+docker run -d -p 8000:8000 credit-risk-api
+```
+Start the Streamlit Frontend:
+
+```bash
+streamlit run src/app.py
+```
+
+### ☁️ Cloud Deployment Setup
+This project uses a highly cost-optimized, decoupled cloud architecture.
+
+* Backend: **AWS ECS (Fargate)**
+The GitHub Action (deploy.yml) automatically builds and pushes the Docker image to Docker Hub on every push to main.
+
+An AWS ECS Cluster pulls the :latest image and boots it on a serverless Fargate task (0.25 vCPU, 0.5 GB RAM).
+
+The task exposes Port 8000 and assigns a Public IP address.
+
+Cost Strategy: Desired tasks can be scaled to 0 to instantly pause billing when not in use.
+
+* Frontend: **Streamlit Community Cloud**
+Connected directly to this GitHub repository.
+
+Automatically rebuilds the UI on code pushes.
+
+Points to the AWS Public IP via the API_URL variable in app.py.

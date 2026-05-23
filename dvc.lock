@@ -14,15 +14,15 @@ stages:
     outs:
     - path: data/raw/current_data.csv
       hash: md5
-      md5: 7abdfcab9faa63f9b0d134cde319b1f9
-      size: 5965695
+      md5: 8867fa50ff0ad922fd0f8e17181351b8
+      size: 1583067
   preprocess:
     cmd: python src/preprocess.py
     deps:
     - path: data/raw/current_data.csv
       hash: md5
-      md5: 7abdfcab9faa63f9b0d134cde319b1f9
-      size: 5965695
+      md5: 8867fa50ff0ad922fd0f8e17181351b8
+      size: 1583067
     - path: src/preprocess.py
       hash: md5
       md5: f9754a0f8b323a775662c55e0c428420
@@ -30,27 +30,27 @@ stages:
     outs:
     - path: data/processed/scaler.pkl
       hash: md5
-      md5: e50cef4f0984153adca3fda0506b26a1
+      md5: 3d60c5b44ea845cbbb7cac4e5158c48e
       size: 1447
     - path: data/processed/train.parquet
       hash: md5
-      md5: 141c6f060dd2a8e213031f0ff23cedda
-      size: 2098514
+      md5: f3784428934cfb6530486d7e72a1bb7a
+      size: 541674
     - path: data/processed/val.parquet
       hash: md5
-      md5: 22660492d22e7357011f113c40501d7a
-      size: 470730
+      md5: 5aafddc1b18d0a6cf2e6e425f11c608a
+      size: 125767
   train:
     cmd: python src/train.py
     deps:
     - path: data/processed/scaler.pkl
       hash: md5
-      md5: e50cef4f0984153adca3fda0506b26a1
+      md5: 3d60c5b44ea845cbbb7cac4e5158c48e
       size: 1447
     - path: data/processed/train.parquet
       hash: md5
-      md5: 141c6f060dd2a8e213031f0ff23cedda
-      size: 2098514
+      md5: f3784428934cfb6530486d7e72a1bb7a
+      size: 541674
     - path: src/train.py
       hash: md5
       md5: 38c2196ca4ea98d4e3cf76d37960a8cb

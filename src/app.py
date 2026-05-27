@@ -47,7 +47,7 @@ if st.button("Predict Risk", type="primary", use_container_width=True):
         income_missing, dependents_missing
     ]
     # http://16.16.196.24:8000/predict
-    API_URL ="http://127.0.0.1:8000/predict"
+    API_URL ="http://16.16.217.208/predict"
     payload = {"features": raw_array}
     
     with st.spinner("Consulting the Docker API..."):
@@ -79,3 +79,25 @@ if st.button("Predict Risk", type="primary", use_container_width=True):
             st.error("🚨 Connection Error: Could not reach the API. Is your Docker container running on port 8000?")
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
+
+
+# Step 1: Wake Up the AWS Container
+# Go back to your AWS Console -> ECS -> Clusters.
+
+# Click your credit-risk-cluster.
+
+# Under the Services tab, click your credit-risk-service, and hit Update.
+
+# Change Desired Tasks from 0 back to 1.
+
+# Click Update Service.
+
+# Step 2: Grab Your New IP Address
+# Inside your cluster, click the Tasks tab.
+
+# Wait about 30–60 seconds and hit the refresh button until the task status turns green and says RUNNING.
+
+# Click the blue Task ID (the long string of letters/numbers).
+
+# Look under the Configuration section and copy your brand new Public IP.

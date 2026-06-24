@@ -47,7 +47,7 @@ if st.button("Predict Risk", type="primary", use_container_width=True):
         income_missing, dependents_missing
     ]
     # http://16.16.196.24:8000/predict
-    API_URL ="http://13.53.39.150 :8000/predict"
+    API_URL ="http://13.53.39.150:8000/predict"
     payload = {"features": raw_array}
     
     with st.spinner("Consulting the Docker API..."):

@@ -9,7 +9,7 @@
 
 A production-grade, cloud-native machine learning system designed to predict credit default risk. This project bridges the gap between a standard Jupyter Notebook and a true enterprise deployment by implementing a complete **Continuous Integration, Continuous Training, and Continuous Deployment (CI/CT/CD)** pipeline.
 
-LIVE DEMO: ![credit-risk-predictor](https://kprav-credit-risk-scoring-c5rmcbca4ivytn9q8fmycd.streamlit.app/)
+🟢 LIVE DEMO: [credit-risk-predictor](https://kprav-credit-risk-scoring-c5rmcbca4ivytn9q8fmycd.streamlit.app/)
 
 ## 🏗️ System Architecture
 

@@ -2,3 +2,6 @@ data/*
 *.csv
 mlruns/*
 __pycache__
+all_project_code.txt
+combine.py
+notebooks/*
